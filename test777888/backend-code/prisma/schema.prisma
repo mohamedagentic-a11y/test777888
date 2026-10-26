@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String            @id @default(uuid())
+  username         String            @unique
+  email            String            @unique
+  displayName      String?
+  department       String?
+  jobTitle         String?
+  adGroups         String[]
+  lastLogin        DateTime?
+  isActive         Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  preferences      UserPreference?
+  auditLogs        AuditLog[]
+  readAnnouncements UserAnnouncementRead[]
+
+  @@map("users")
+}
+
+model UserPreference {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  theme     String   @default("light")
+  language  String   @default("en")
+  shortcuts String[] @default([])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+model NewsItem {
+  id          String    @id @default(uuid())
+  title       String
+  summary     String
+  content     String    @db.Text
+  imageUrl    String?
+  category    String
+  isPublished Boolean   @default(false)
+  publishDate DateTime  @default(now())
+  expiryDate  DateTime?
+  authorId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("news_items")
+}
+
+model Announcement {
+  id          String                 @id @default(uuid())
+  title       String
+  message     String                 @db.Text
+  priority    String                 @default("normal") // low, normal, high, critical
+  targetGroups String[]              @default([])
+  startDate   DateTime               @default(now())
+  endDate     DateTime?
+  isActive    Boolean                @default(true)
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+  readBy      UserAnnouncementRead[]
+
+  @@map("announcements")
+}
+
+model UserAnnouncementRead {
+  userId         String
+  announcementId String
+  readAt         DateTime     @default(now())
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  announcement   Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  @@id([userId, announcementId])
+  @@map("user_announcement_reads")
+}
+
+model ServiceStatus {
+  id          String   @id @default(uuid())
+  serviceName String   @unique
+  status      String   @default("operational") // operational, degraded, outage, maintenance
+  description String?
+  lastUpdated DateTime @updatedAt
+
+  @@map("service_statuses")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  action     String
+  resource   String
+  details    Json?
+  ipAddress  String?
+  userAgent  String?
+  timestamp  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+}
+
+model AppShortcut {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  url         String
+  icon        String?
+  category    String?
+  isGlobal    Boolean  @default(false)
+  requiredGroups String[] @default([])
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("app_shortcuts")
+}
