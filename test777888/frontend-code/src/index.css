@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-arabic: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+    font-family: var(--font-sans);
+  }
+
+  /* Handle RTL font switching based on the lang attribute set by the i18n module */
+  [lang="ar"] body {
+    font-family: var(--font-arabic);
+  }
+
+  /* Ensure focus rings are consistent for accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-blue-600 ring-offset-2;
+  }
+}
+
+@layer components {
+  /* Layout Utilities for RTL/LTR support using logical properties */
+  .page-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Card styling consistent with the modern UI goal */
+  .card-base {
+    @apply bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden;
+  }
+
+  /* Interactive elements */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-md font-medium 
+           transition-colors duration-200 bg-blue-700 text-white 
+           hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-md font-medium 
+           transition-colors duration-200 bg-white text-slate-700 border border-slate-300 
+           hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Form elements */
+  .input-field {
+    @apply block w-full rounded-md border-slate-300 shadow-sm 
+           focus:border-blue-500 focus:ring-blue-500 sm:text-sm;
+  }
+}
+
+@layer utilities {
+  /* Logical property utilities for start/end alignment */
+  .text-start {
+    text-align: start;
+  }
+  
+  .text-end {
+    text-align: end;
+  }
+
+  .ms-auto {
+    margin-inline-start: auto;
+  }
+
+  .me-auto {
+    margin-inline-end: auto;
+  }
+
+  .ps-4 {
+    padding-inline-start: 1rem;
+  }
+
+  .pe-4 {
+    padding-inline-end: 1rem;
+  }
+
+  /* Custom scrollbar for a cleaner look */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full hover:bg-slate-400;
+  }
+}
+
+/* Transitions for page navigation */
+.fade-enter {
+  opacity: 0;
+}
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
+.fade-exit {
+  opacity: 1;
+}
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+}
+
+/* Print styles for reports or news items */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background-color: white;
+  }
+}
